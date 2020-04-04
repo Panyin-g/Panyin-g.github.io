@@ -1,0 +1,534 @@
+---
+layout: post
+title:  "MySQL 简明教程"
+date:   2018-05-12 17:14:54
+categories: MySQL
+tags: 数据库 MySQL
+---
+
+* content
+{:toc}
+Mysql是最流行的关系型数据库管理系统，在WEB应用方面MySQL是最好的RDBMS(Relational Database Management System：关系数据库管理系统)应用软件之一。
+
+
+
+
+## MySQL简介
+
+数据库（Database）是按照数据结构来组织、存储和管理数据的仓库，
+
+每个数据库都有一个或多个不同的API用于创建，访问，管理，搜索和复制所保存的数据。
+
+我们也可以将数据存储在文件中，但是在文件中读写数据速度相对较慢。
+
+所以，现在我们使用关系型数据库管理系统（RDBMS）来存储和管理的大数据量。所谓的关系型数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。
+
+RDBMS即关系数据库管理系统(Relational Database Management System)的特点：
+
+1.数据以表格的形式出现
+    
+2.每行为各种记录名称
+    
+3.每列为记录名称所对应的数据域
+
+4.许多的行和列组成一张表单
+    
+5.若干的表单组成database
+
+`RDBMS 术语`
+
+`数据库`: 数据库是一些关联表的集合。
+
+`数据表`: 表是数据的矩阵。在一个数据库中的表看起来像一个简单的电子表格。
+
+`列`: 一列(数据元素) 包含了相同的数据, 例如邮政编码的数据。
+
+`行`：一行（=元组，或记录）是一组相关的数据，例如一条用户订阅的数据。
+
+`冗余`：存储两倍数据，冗余降低了性能，但提高了数据的安全性。
+
+`主键`：主键是唯一的。一个数据表中只能包含一个主键。你可以使用主键来查询数据。
+
+`外键`：外键用于关联两个表。
+
+`复合键`：复合键（组合键）将多个列作为一个索引键，一般用于复合索引。
+
+`索引`：使用索引可快速访问数据库表中的特定信息。索引是对数据库表中一列或多列的值进行排序的一种结构。类似于书籍的目录。
+
+`参照完整性`: 参照的完整性要求关系中不允许引用不存在的实体。与实体完整性是关系模型必须满足的完整性约束条件，目的是保证数据的一致性。
+
+### Mysql数据库
+
+MySQL是一个关系型数据库管理系统，由瑞典MySQL AB公司开发，目前属于Oracle公司。MySQL是一种关联数据库管理系统，关联数据库将数据保存在不同的表中，而不是将所有数据放在一个大仓库内，这样就增加了速度并提高了灵活性。
+
+Mysql是开源的，所以你不需要支付额外的费用。
+
+Mysql支持大型的数据库。可以处理拥有上千万条记录的大型数据库。
+
+MySQL使用标准的SQL数据语言形式。
+
+Mysql可以运行于多个系统上，并且支持多种语言。这些编程语言包括C、C++、Python、Java、Perl、PHP、Eiffel、Ruby和Tcl等。
+
+Mysql对PHP有很好的支持，PHP是目前最流行的Web开发语言。
+
+MySQL支持大型数据库，支持5000万条记录的数据仓库，32位系统表文件最大可支持4GB，64位系统支持最大的表文件为8TB。
+
+Mysql是可以定制的，采用了GPL协议，你可以修改源码来开发自己的Mysql系统。
+
+### MySQL存储引擎
+数据库存储引擎是数据库底层软件组织，数据库管理系统（DBMS）使用数据引擎进行创建、查询、更新和删除数据。不同的存储引擎提供不同的存储机制、索引技巧、锁定水平等功能，使用不同的存储引擎，还可以 获得特定的功能。现在许多不同的数据库管理系统都支持多种不同的数据引擎。`MySql的核心就是存储引擎`。
+
+InnoDB是事务型数据库的首选引擎，支持事务安全表（ACID），支持行锁定和外键，InnoDB是默认的MySQL引擎。InnoDB主要特性有：
+
+1、InnoDB给MySQL提供了具有提交、回滚和崩溃恢复能力的事物安全（ACID兼容）存储引擎。InnoDB锁定在行级并且也在SELECT语句中提供一个类似Oracle的非锁定读。这些功能增加了多用户部署和性能。在SQL查询中，可以自由地将InnoDB类型的表和其他MySQL的表类型混合起来，甚至在同一个查询中也可以混合
+
+2、InnoDB是为处理巨大数据量的最大性能设计。它的CPU效率可能是任何其他基于磁盘的关系型数据库引擎锁不能匹敌的
+
+3、InnoDB存储引擎完全与MySQL服务器整合，InnoDB存储引擎为在主内存中缓存数据和索引而维持它自己的缓冲池。InnoDB将它的表和索引在一个逻辑表空间中，表空间可以包含数个文件（或原始磁盘文件）。这与MyISAM表不同，比如在MyISAM表中每个表被存放在分离的文件中。InnoDB表可以是任何尺寸，即使在文件尺寸被限制为2GB的操作系统上
+
+4、InnoDB支持外键完整性约束，存储表中的数据时，每张表的存储都按主键顺序存放，如果没有显示在表定义时指定主键，InnoDB会为每一行生成一个6字节的ROWID，并以此作为主键
+
+5、InnoDB被用在众多需要高性能的大型数据库站点上
+
+InnoDB不创建目录，使用InnoDB时，MySQL将在MySQL数据目录下创建一个名为ibdata1的10MB大小的自动扩展数据文件，以及两个名为ib_logfile0和ib_logfile1的5MB大小的日志文件
+
+## 初涉MySQL
+
+`登录与退出`==>>
+
+配置文件：my.ini
+
+启动服务器：net start mysql
+
+停止服务器：net stop mysql
+
+登录参数：
+
+-D'database_name'：打开指定数据库
+
+--'delimiter_name'：指定分隔符
+
+-h'host_name'：服务器名称
+
+-p'password'：密码
+
+-P'port=#'：端口号
+
+--'prompt_name'：设置提示符
+
+-u'user_name'：用户名
+
+-V --> version：输出版本信息并且退出
+
+MySQL退出：mysql > exit；mysql > quit；mysql > \q 。
+
+`常用命令`==>>
+
+`SELECT VERSION()`：显示当前服务器版本
+
+`SELECT NOW()`：显示当前时间
+
+`SELECT USER()`：显示当前用户
+
+`SHOW DATABASES`：显示所有数据库名称
+
+`USE db_name`：使用db_name数据库
+
+`SHOW TABLES`：显示当前数据库所有表
+
+`SHOW CREATE DATABASE db_name`：查看数据库字符集编码
+
+`SHOW CREATE TABLE tb_name`：查看数据表创建语句
+
+`SHOW COLUMNS FROM tb_name`：查看数据表字段信息
+
+`SHOW WARNING`：查看警告信息
+
+## 数据类型
+
+在 MySQL 中，有三种主要的类型：数值、日期/时间和字符串(字符)类型。
+
+### 数值类型
+类型			大小			用途
+TINYINT			1字节			（-128，127）
+SMALLINT		2字节			（-32 768，32 767）
+MEDIUMINT		3 字节			（-8 388 608，8 388 607）
+INT或INTEGER	4 字节			（10位整数）
+BIGINT			8字节			（极大整数值）
+FLOAT			4 字节			（单精度浮点型）
+DOUBLE			8字节			（双精度浮点型）
+DECIMAL			依赖于M和D的值	（不丢失精度的小数值）
+### 日期和时间类型
+类型			大小			格式				用途
+DATE			3				YYYY-MM-DD			日期值
+TIME			3				HH:MM:SS			时间值或持续时间
+YEAR			1				YYYY				年份值
+DATETIME		8				YYYY-MM-DD HH:MM:SS	混合日期和时间值
+TIMESTAMP		4				YYYYMMDD HHMMSS		混合日期和时间值，时间戳
+### 字符串类型
+类型			大小						用途
+CHAR			0-255字节					定长字符串
+VARCHAR			0-65535 字节				变长字符串
+TINYTEXT		0-255字节					短文本字符串
+TEXT			0-65 535字节				长文本数据
+MEDIUMTEXT		0-16 777 215字节			中等长度文本数据
+LONGTEXT		0-4 294 967 295字节			极大文本数据
+TINYBLOB		0-255字节					不超过 255 个字符的二进制字符串
+BLOB			0-65 535字节				二进制形式的长文本数据
+MEDIUMBLOB		0-16 777 215字节			二进制形式的中等长度文本数据
+LONGBLOB		0-4 294 967 295字节			二进制形式的极大文本数据
+
+## 操作数据库
+
+CREATE创建
+```sql
+CREATE {DATABASE | SCHEMA} [IF NOT EXISTS] db_name
+[[DEFAULT] CHARACTER SET [=] charset_name];
+```
+
+ALTER 修改字符集
+```sql
+ALTER {DATABASE | SCHEMA} [db_name] [DEFAULT] CHARACTER SET [=] charset_name;
+```
+
+DROP 删除
+```sql
+DROP {DATABASE | SCHEMA} [IF EXISTS] db_name;
+```
+
+## 操作数据表
+
+`CREATE TABLE`
+```sql
+CREATE TABLE tablename
+(column_name1 data_type(size) [AUTO_INCREMENT] [constraint_name],
+column_name2 data_type(size) [constraint_name],
+column_name3 data_type(size) [constraint_name],
+....
+);
+```
+
+`DROP TABLE`
+```sql
+# DROP TABLE 语句用于删除表
+DROP TABLE table_name
+```
+
+`ALTER TABLE`
+```
+# ALTER TABLE 语句用于在已有的表中添加、删除或修改列
+# 表中添加列
+ALTER TABLE table_name ADD column_name datatype
+# 表中删除列
+ALTER TABLE table_name DROP COLUMN column_name
+# 表中修改列数据类型
+ALTER TABLE table_name MODIFY COLUMN column_name datatype
+```
+
+`CREATE INDEX`
+```
+# 在表上创建一个[唯一的]索引。不允许使用重复的值
+CREATE [UNIQUE] INDEX index_nameON table_name (column_name)
+```
+
+`CONSTRAINT`
+
+约束分为表级约束和列级约束。如果存在违反约束的数据行为，行为会被约束终止。约束可以在创建表时规定（通过CREATE TABLE 语句），或者在表创建之后规定（通过ALTER TABLE语句）。
+
+`NOT NULL`：指示某列不能存储 NULL 值。
+
+`UNIQUE`：保证某列的每行必须有唯一的值。
+
+`PRIMARY KEY`：NOT NULL 和 UNIQUE 的结合。确保某列（或两个列多个列的结合）有唯一标识，有助于更容易更快速地找到表中的一个特定的记录。
+
+`FOREIGN KEY`：(外键)保证一个表中的数据匹配另一个表中的值的参照完整性。
+
+`CHECK`：保证列中的值符合指定的条件。
+
+`DEFAULT`：规定没有给列赋值时的默认值。
+
+## 操作数据
+
+### INSERT
+
+第一种形式：
+```sql
+INSERT [INTO] tbl_name [(col_name,...)] {VALUES|VALUE} ({expr|DEFAULT},...),(...),...
+```
+
+第二种形式：
+```sql
+INSERT [INTO] tbl_name SET col_name={expr|DEFAULT},
+````
+
+第三种形式：
+```sql
+INSERT [INTO] tbl_name [(col_name,...)] SELECT...
+```
+### DELETE
+
+单表删除：
+```sql
+DELETE FROM tbl_name [WHERE where_conditon]
+```
+
+多表删除：
+
+### UPDATE
+
+单表更新：
+```sql
+UPDATE [LOW_PRIORITY] [IGNORE] table_reference SET col_name1={expr1|DEFAULT} [,col_name2={expr2|DEFAULT}]...[WHERE where_condition]
+```
+
+多表更新：
+
+### SELECT
+```sql
+SELECT column_expr [,select_expr...]
+[
+    FROM table_references
+    [WHERE where_condition]
+    [GROUP BY {col_name|position} [ASC|DESC],...]
+    [HAVING where_condition]
+    [ORDER BY {col_name|expr|position} [ASC|DESC],...]
+    [LIMIT {[offset,] row_count|row_count OFFSET offset}]
+];
+```
+`WHERE`：column_name operator value；
+
+`GROUP BY`：语句用于结合聚合函数，根据一个或多个列对结果集进行分组；
+
+`HAVING`：在 SQL 中增加 HAVING 子句原因是，WHERE 关键字无法与聚合函数一起使用，HAVING 子句可以让我们筛选分组后的各组数据；
+
+`ORDER BY`：ASC 或缺省 ==> 升序， DESC ==> 降序
+
+`LIMIT(TOP)`：规定要返回的记录的数目。
+
+### 其它操作符
+
+`UNION`：操作符合并两个或多个 SELECT 语句的结果。
+
+`AS`：通过使用 SQL，可以为表名称或列名称指定别名。
+
+`Auto-increment`： 会在新记录插入表中时生成一个唯一的数字。
+
+`DISTINCT`：仅列出不同值
+
+`LIKE`：
+
+`AND&OR`：多条件
+
+`IN`： 操作符允许您在 WHERE 子句中规定多个值。
+
+`BETWEEN`： 操作符用于选取介于两个值之间的数据范围内的值。
+
+### SQL通配符
+
+可用于替代字符串中的任何其他字符。
+
+`%`：替代 0 个或多个字符
+
+`_`：替代一个字符
+
+`[charlist]`：字符列中的任何单一字符
+
+`[^charlist]或[!charlist]`：不在字符列中的任何单一字符
+
+注意：`”_”`不能匹配中文
+
+`[charlist]`，`[^charlist]`不能用like语句。
+
+注：后两个与正则表达式有关。
+
+## 子查询与连接
+
+JOIN 用于把来自两个或多个表的行结合起来。
+
+`INNER JOIN `关键字在表中存在至少一个匹配时返回行。
+```sql
+SELECT column_name(s)
+FROM table1
+[INNER] JOIN table2
+ON table1.column_name=table2.column_name;
+```
+
+`LEFT JOIN` 从左表返回所有的行，即使右表中没有匹配。如果右表中没有匹配，则结果为 NULL。
+```sql
+SELECT column_name(s)
+FROM table1
+LEFT [OUTER] JOIN table2
+ON table1.column_name=table2.column_name;
+```
+
+`RIGHT JOIN` 关键字从右表返回所有的行，即使左表中没有匹配。如果左表中没有匹配，则结果为 NULL。
+```sql
+SELECT column_name(s)
+FROM table1
+RIGHT [OUTER] JOIN table2
+ON table1.column_name=table2.column_name;
+```
+
+`FULL JOIN`只要其中某个表存在匹配，FULL JOIN 关键字就会返回行。
+```sql
+SELECT column_name(s)
+FROM table_name1
+FULL JOIN table_name2 
+ON table_name1.column_name=table_name2.column_name;
+```
+
+## 函数
+
+(1)`.AVG()`：函数返回数值列的平均值。
+```sql
+SELECT AVG(column_name) FROM table_name
+```
+
+(2)`.COUNT()`：函数返回匹配指定条件的行数。
+```sql
+SELECT COUNT(column_name) FROM table_name
+```
+
+`COUNT(DISTINCT column_name)`：返回指定列的不同值的数目。
+```sql
+SELECT COUNT(DISTINCT column_name) FROM table_name
+```
+
+(3)`.MAX()/MIN()`：返回指定列的最大/小值。
+```sql
+SELECT MAX(column_name)/MIN(column_name) FROM table_name;
+```
+
+(4)`.SUM()`：函数返回数值列的总数。
+```sql
+SELECT SUM(column_name) FROM table_name;
+```
+
+(5)`.UCASE()/LCASE()`：把字段的值转换成大/小写。
+```sql
+SELECT UCASE(column_name)/LCASE(column_name) FROM table_name;
+```
+
+(6)`.MID()`：函数用于从文本字段中提取字符。
+```sql
+#`column_name`：字段；`start`：开始位置默认为1；`length`：长度
+SELECT MID(column_name,start[,length]) FROM table_name;
+```
+(7)`.LENGTH()`：函数返回文本字段中值的长度。
+```sql
+SELECT LENGTH(column_name) FROM table_name;
+```
+
+(8)`.ROUND()`：函数用于把数值字段舍入为指定的小数位数。
+```sql
+#`column_name`：字段；`decimals`：小数位数
+SELECT ROUND(column_name,decimals) FROM table_name;
+```
+
+(9)`.FORMAT()`：函数用于对字段的显示进行格式化。
+```sql
+SELECT FORMAT(column_name,format) FROM table_name;
+#`column_name`：字段；`format`：规定格式。’%Y-%m-%d’
+SELECT DATE_FORMAT(Now(),'%Y-%m-%d') FROM Websites;
+```
+
+(10)`.IFNULL()`：函数用于在发现参数为空时为参数赋值。
+```sql
+SELECT IFNULL(grade,0) FROM score;
+```
+
+## 数据库三大范式
+
+### 第一范式：保证每列的原子性
+第一范式是最基本的范式。如果数据库表中的所有字段值都是不可分解的原子值，就说明该数据库满足了第一范式。
+
+### 第二范式：保证一张表只描述一件事情
+在满足第一范式的基础上，数据库表中不存在非关键字段对任一候选关键字段的部分函数依赖，也即所有非关键字段都完全依赖于任一组候选关键字。
+
+### 第三范式 保证每列都和主键直接相关
+第三范式又和第二范式相关，用第三范式的定义描述第三范式就是，数据库表中如果不存在非关键字段任一候选关键字段的传递函数依赖则符合第三范式，所谓传递函数依赖指的是如果存在"A-->B-->C"的决定关系，则C传递函数依赖于A。也就是说表中的字段和主键直接对应不依靠其他中间字段，说白了就是，决定某字段值的必须是主键。
+
+反范式跟范式所要求的正好相反，在反范式的设计模式，我们可以允许适当的数据的冗余，用这个冗余去取操作数据时间的缩短。典型的空间换时间操作。
+
+## 性能优化
+可以从以下几个方面对MySQL进行优化， 效果: SQL和索引 > 数据库表结构 > 系统配置 > 硬件，但成本从低到高。
+
+### 1、常用SQL的优化
+1.1 优化 order by语句 
+尽量通过索引直接返回有序数据，减少额外的排序。适当加大系统变量max_length_for_sort_data的值，能够让MySQL选择更优化的filesort排序算法；适当加大sort_buffer_size排序区，尽量让排序在内存中完成，而不是通过创建临时表放在文件中进行。尽量只使用必要的字段，select具体的字段名称，而不是select * 选择所有字段，这样可以减少排序区的使用，提高SQL性能。
+
+1.2 优化or查询 
+对于含有or的查询子句，如果要利用索引，则or之间的每个条件列都必须使用索引；如果没有索引，可以考虑增加索引。 
+MySQL在处理含有or的查询时，实际上对or的各个字段分别查询后的结果进行了union操作。
+
+1.3 优化分页查询 
+第一种 在索引上完成排序分页操作，然后根据主键关联回原表查询所需要的其他列的内容； 
+第二种 在排序字段不会出现重复值的情况下，新增一个参数记录上次查询的最后一条记录，将limit m,n转化成limit n.
+
+1.4 避免向数据库请求不需要的数据
+避免使用SELECT *这种方式进行查询，应该只返回需要的列。当一行数据被多次使用时可以考虑将数据行缓存起来，避免每次使用都要到MySql查询。单条查询最后添加 LIMIT 1，停止全表扫描。
+
+1.5 千万不要 ORDER BY RAND()
+MySQL会不得不去执行RAND()函数 （很耗CPU时间），而且这是为了每一行记录去记行，然后再对其排序。就算是你用了Limit 1也无济于事（因为要排序）
+
+1.6 为每张表设置一个ID
+我 们应该为数据库里的每张表都设置一个ID做为其主键，而且最好的是一个INT型的（推荐使用UNSIGNED），并设置上自动增加的 AUTO_INCREMENT标志。使用VARCHAR类型来当主键会使用得性能下降。
+
+1.7 使用 ENUM 而不是 VARCHAR
+ENUM 类型是非常快和紧凑的。在实际上，其保存的是 TINYINT，但其外表上显示为字符串。这样一来，用这个字段来做一些选项列表变得相当的完美。如果你有一个字段，比如“性别”，“国家”，“民族”， “状态”或“部门”，你知道这些字段的取值是有限而且固定的，那么，你应该使用 ENUM 而不是 VARCHAR。MySQL也有一个“建议”告诉你怎么去重新组织你的表结构。当你有一个VARCHAR字段时，这个建议会告诉你把其改成 ENUM 类型。使用PROCEDURE ANALYSE()你可以得到相关的建议。
+
+1.8 尽可能的使用 NOT NULL
+除 非你有一个很特别的原因去使用NULL值，你应该总是让你的字段保持 NOT NULL。
+
+1.9 把IP地址存成 UNSIGNED INT, 固定长度的表会更快。
+用整形来存放，只需要4个字节，并且你可以有定长的字段。如 果表中的所有字段都是“固定长度”的，整个表会被认为是 “static” 或 “fixed-length”。 例如，表中没有如下类型的字段： VARCHAR，TEXT，BLOB。只要你包括了其中一个这些字段，那么这个表就不是“固定长度静态表”了，这样，MySQL 引擎会用另一种方法来处理。固定长度的表会提高性能，因为MySQL搜寻得会更快一些，因为这些固定的长度是很容易计算下一个数据的偏移量的，所以读取的 自然也会很快。而如果字段不是定长的，那么，每一次要找下一条的话，需要程序找到主键。并且，固定长度的表也更容易被缓存和重建。不过，唯一的副作用是， 固定长度的字段会浪费一些空间，因为定长的字段无论你用不用，他都是要分配那么多的空间。使用“垂直分割”技术（见下一条），你可以分割你的表成为两个一 个是定长的，一个则是不定长的。
+
+### 2、索引优化
+MySQL的索引在存储引擎层实现，而不是在服务器层。为经常需要搜索的字段建索引。
+
+（1）MySQL使用索引的典型情景 
+
+①匹配全值（match the full value） 
+
+②匹配值的范围（match a range of values） 
+
+③匹配最左前缀（match a leftmost prefix）最左匹配原则是MySQL中B-Tree索引使用的首要原则。 
+
+④只查询索引（index only query）当然where子句中要满足最左匹配原则 
+
+⑤匹配列前缀（match a column prefix）使用复合索引的第一列的开头一部分 
+
+⑥复合索引中，一部分匹配精确内容 and 其他部分匹配一个范围（match one part exactly and match a range on another part） 
+
+⑦列名是索引，那么column_name is null就会使用索引,比如where column_name is null 
+
+（2）MySQL不使用索引的典型情景 
+
+①like “%query”不使用B-Tree索引，但like “query%”会使用B-Tree索引。 
+
+②数据类型出现隐式转换的时候也不会使用索引。尤其当列类型是字符串时，一定记得在where条件中把字符串常量值用引号引起来，比如where last_name = ‘1’; 
+
+③使用复合索引时，查询条件不包含索引的最左边部分 
+
+④用or 分割的条件，如果其中一个列中没有索引，则涉及的另一个索引也不会被用到。 
+
+⑤如果MySQL估计使用索引比全表扫描更慢，则不使用索引。
+
+### 3、应用优化
+3.1 使用数据库连接池
+`durid数据库连接池`
+
+3.2 减少对MySQL的访问
+①理清应用逻辑，能一次取出的数据不用两次； 
+②使用查询缓存 
+
+MySQL的查询缓存（MySQL query cache）是4.1版本之后新增的功能，作用是存储select的查询文本和相应结果。如果随后收到一个相同的查询，服务器会从查询缓存中重新得到查询结果，而不再需要解析和执行查询。 
+查询缓存适用于更新不频繁的表，当表更改（包括表结构和数据）后，查询缓存会被清空。 
+
+③在应用端增加cache层
+`Redis`
+
+④负载均衡 （读写分离）
+负载均衡（Load Balance）是实际应用中使用非常普遍的一种优化方法，它的机制就是利用某种均衡算法，将固定的负载量分布到不同的服务器上，以此来减轻单台服务器的负载，达到优化的目的。负载均衡可以用在系统中的各个层面中，从前台的Web服务器到中间层的应用服务器，最后到数据层的数据库服务器，都可以使用。 
+利用 MySQL 复制分流查询和更新操作 
+利用 MySQL 的主从复制可以有效地分流更新操作和查询操作，具体的实现是一个主服务器承担更新操作，而多台从服务器承担查询操作，主从之间通过复制实现数据的同步。通过复制来分流查询和更新是减少主数据库负载的一个常用方法，但是这种办法也存在一些问题，最主要的问题是当主数据库上更新频繁或者网络出现问题的时候，主从之间的数据可能存在比较大的延迟更新，从而造成查询结果和主数据库上有所差异。因此在设计应用的时候需要有所考虑。

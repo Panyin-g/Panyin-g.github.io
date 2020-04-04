@@ -1,0 +1,218 @@
+---
+layout:     post
+title:      "JAVA中的五种JSON解析方式"
+subtitle:   " \"Hello World, Hello Blog\""
+date:       2018-11-28 22:00:00
+author:     "Panying"
+header-img: "img/post-bg-2015.jpg"
+tags:
+    - json
+---
+
+> “陪伴是最长情的告白！”
+
+
+## 前言
+
+我们在日常开发中少不了和JSON数据打交道，那么我们来看看JAVA中常用的JSON解析方式：
+
+* json-lib
+* org.json
+* jackSon
+* fastjson
+* GSON
+
+---
+
+## 1 json-lib
+
+json-lib具有通用性，但是比较麻烦，且时间有些久远，jar包只更新到2010年。
+
+### 1.1 maven依赖
+
+```
+ <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.4</version>
+      <classifier>jdk15</classifier>//jar包区分jdk1.3和jdk1.5版本
+    </dependency>
+```
+
+### 1.2 具体操作
+
+JSONObject与String相互转换
+```
+JSONObject jsonobject= JSONObject.fromObject(str);
+String str = JSONObject.toString;
+```
+获取JSONObject数据及遍历JSONArray
+```
+String str = JSONObject.getInt("keys")  
+String str = JSONObject.getString("keys")
+ 
+JSONArray jsonArray = JSONObject.getJSONArray(String);
+```
+遍历：
+```
+for(i<JSONArray.size())
+{
+   JSONObject = JSONArray.getJSONObject(i); 
+   JSONObject.getInt()...
+}
+ 
+Iterator<String> iterator = JSONObject.keys(); 
+  while(iterator.hasNext()){
+    String keys = iterator.next();
+}
+```
+JSONObject转对象
+```
+Grade grade = (Grade)JSONObject.toBean(jsonObject,Grade.class);
+```
+
+## 2 org.json
+
+与json-lib相类似，主要有三点区别
+
+### 2.1 maven依赖
+
+```
+<dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20170516</version>
+</dependency>
+```
+
+### 2.2 创建json对象
+```
+JSONObject = new JSONObject(str);
+```
+
+### 2.3 与json-lib区别
+
+net.sf.json.JSONObject： 没有严格要求获取字段的类型跟getXXX()的类型一样
+org.json.JSONObject：获取的字段类型必须跟getXXX()的类型一样
+
+## 3 fastjson
+
+阿里巴巴开源框架，效率最高
+
+### 3.1 maven依赖
+```
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.37</version>
+</dependency>
+```
+
+### 3.2 String转对象
+```
+Student stu = JSON.parseObject(json,Student.class);
+List<String> list=JSON.parseArray(json2, String.class);
+```
+
+### 3.3 对象转String
+```
+JSON.toJSONString(str);
+//or String json = JSON.toJSON(str).toString();
+```
+
+## 4 GSON
+
+GSON解析是谷歌的，也比较好用。
+
+### 4.1 maven依赖
+```
+<dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.1</version>
+    </dependency>
+```
+
+### 4.2 String转对象
+```
+Gson gson = new Gson();
+Grade grade = gson.fromJson(json1,Grade.class);
+ 
+ArrayList<String> list=gson.fromJson(json2,new TypeToken<ArrayList<String>>(){}.getType());
+```
+
+### 4.3 对象转String
+```
+String json=gson.toJson(grade);
+```
+
+## 5 jackSon
+
+springMVC内置解析器就是jackson，作为SpringBoot 技术栈 开发的话, 用默认的Jackson是最好的。
+Jackson是一个功能强大的Java序列化库。除了支持常用的json，同时还支持Smile，BSON，XML，CSV，YAML。
+
+Jackson的json库提供了3种API：
+  Streaming API ： 性能最好
+  Tree Model ： 最灵活
+  Data Binding ： 最方便
+
+### 5.1 Data Binding
+
+基本使用：
+```
+//ObjectMapper是线程安全的，应该尽量的重用。
+ObjectMapper mapper=new ObjectMapper();
+//字符串转化为对象
+Grade grade=mapper.readValue(jsonStr, Grade.class);
+//Jackson是基于JavaBean来序列化属性的，属性要有GETTER方法，才会输出该属性
+/有自定义类
+Map<String, ResultValue> results = mapper.readValue(jsonSource, 
+                          new TypeReference<Map<String, ResultValue>>() { } );
+//对象转化为字符串
+String gradeStr = mapper.writeValueAsString(grade);
+```
+
+### 5.2 Tree Model
+在调用了某个api后，需要解析返回的json数据获取信息，这种情况下为json创建一个对应的类是很不方便的。
+此时使用Tree Model来解析json就比较方便了
+```
+JsonNode root = mapper.readTree(rerenjson);
+JsonNode user = root.get("user");
+String id = user.get("id").asText();
+String name = user.get("name").asText();
+JsonNode avators = user.get("avatar");
+if (avators.isArray()) {
+    for (Iterator it = avators.getElements(); it.hasNext(); ){
+        JsonNode avator = it.next();
+        if ("tiny".equals(avator.get("type").asText())) {
+            String ava = avator.get("url").asText();
+            break;
+        }
+    }
+}
+```
+### 5.3 常用注解与配置
+1、常用注解： 
+@JsonIgnore 此注解用于属性上，作用是进行JSON操作时忽略该属性。 
+@JsonFormat 此注解用于属性上，作用是把Date类型直接转化为想要的格式，如@JsonFormat(pattern = “yyyy-MM-dd HH-mm-ss”)。 
+@JsonProperty 此注解用于属性上，作用是把该属性的名称序列化为另外一个名称，如把trueName属性序列化为name，@JsonProperty(“name”)。也可以直接在类上添加注解 JsonIgnoreProperties。
+2、Mapper的一些实用配置：（其他配置可见上述jackson-databind官方链接）
+```
+// to allow serialization of "empty" POJOs (no properties to serialize)
+// (without this setting, an exception is thrown in those cases)（空对象是否抛出异常）
+mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+// to write java.util.Date, Calendar as number (timestamp):（日期改为时间戳）
+mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+// to allow (non-standard) unquoted field names in JSON:（特殊字符和打印符，这在FastJson曾是个bug）
+mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+// to allow use of apostrophes (single quotes), non standard（单引号）
+mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+```
+
+---
+
+## 后记
+
+如果你恰好逛到了这里，希望这篇文章对你有帮助。
+
+—— Panying 后记于 2018.11.28

@@ -1,0 +1,84 @@
+---
+layout:     post
+title:      "JSON"
+subtitle:   " \"Hello World, Hello Blog\""
+date:       2018-11-27 22:00:00
+author:     "Panying"
+header-img: "img/post-bg-2015.jpg"
+tags:
+    - json
+---
+
+> “Yeah It's on. ”
+
+## JSON简介
+
+JSON：JavaScript 对象表示法（JavaScript Object Notation）。是存储和交换文本信息的语法，类似 XML。
+JSON 比 XML 更小、更快，更易解析。
+
+## JSON语法
+
+JSON 语法是 JavaScript 对象表示法语法的子集。
+数据在名称/值对中、数据由逗号分隔、花括号保存对象、方括号保存数组
+
+JSON 值可以是：数字（整数或浮点数）、字符串（在双引号中）、逻辑值（true 或 false）、数组（在方括号中）、对象（在花括号中）、null
+
+JSON 不能存储 Date 对象，需将其转化为字符串进行存储。
+
+## JSON的使用
+
+JSON.parse是将json格式的字符串转换成json对象。
+```
+var str ='{"name":"小强","age":16,"msg":["a","b"],"regex": "^http://.*"}';
+var json = JSON.parse(str);
+console.log("name:" + json.name);
+console.log("msgLen:" + json.msg.length);
+
+// 结果
+// name:小强
+// msgLen:2
+```
+
+JSON.stringify是将json对象转换成json格式的字符串。
+```
+var json = {"name":"小强","age":16,"msg":["a","b"],"regex": "^http://.*"};
+var str = JSON.stringify(json);
+console.log("json:" + str);
+console.log("jsonLen:" + str.length);
+
+// 结果
+// json:{"name":"小强","age":16,"msg":["a","b"],"regex":"^http://.*"}
+// jsonLen:60
+```
+备注：JSON.parse和JSON.stringify支持IE8及其以上版本
+
+将JSON转换成数组
+```
+function jsonToArray(obj){
+    var r = {key:[],value:[]};
+    for(var k in obj){
+        if(!obj.hasOwnProperty(k)){
+            continue;
+        }
+        r.key.push(k);
+        r.value.push(obj[k]);
+    }
+    return r;
+}
+
+var json = {"name":"小强","age":16,"msg":["a","b"],"regex": "^http://.*"};
+var arrJson = jsonToArray(json);
+console.log("regexKEY:" + arrJson.key[3]);
+console.log("regexVALUE:" + arrJson.value[3]);
+console.log("KEYLen:" + arrJson.key.length);
+
+// 结果
+// regexKEY: regex
+// regexVALUE: ^http://.*
+// KEYLen:4
+```
+
+## jQuery的JSON操作
+
+json字符串转json对象：jQuery.parseJSON(jsonStr);
+json对象转json字符串：JSON.stringify(jsonObj)。

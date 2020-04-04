@@ -1,0 +1,219 @@
+---
+layout:     post
+title:      "java日志基础"
+subtitle:   " \"Hello World, Hello Blog\""
+date:       2018-11-29 22:00:00
+author:     "Panying"
+header-img: "img/post-bg-2015.jpg"
+tags:
+    - Log
+---
+
+> “Yeah It's on. ”
+
+
+## 前言
+
+对于一个应用程序来说日志记录是必不可少的一部分。线上问题追踪，基于日志的业务逻辑统计分析等都离不日志。java领域存在多种日志框架，目前常用的日志框架包括Jul，Commons Logging，Slf4j，Log4j，Log4j2，Logback。
+
+---
+
+## Java常用日志框架
+
+* Jul (Java Util Logging),自Java1.4以来的官方日志实现。（不建议使用）
+
+* Commons Logging Apache基金会所属的项目，是一套Java日志接口，之前叫Jakarta Commons Logging，后更名为Commons Logging。
+
+* Slf4j 类似于Commons Logging，是一套简易Java日志门面，本身并无日志的实现。（Simple Logging Facade for Java，缩写Slf4j）。
+
+* Log4j Apache Log4j是一个基于Java的日志记录工具。它是由Ceki Gülcü首创的，现在则是Apache软件基金会的一个项目。 Log4j是几种Java日志框架之一。
+
+* Log4j2 Apache Log4j 2是apache开发的一款Log4j的升级产品。
+
+* Logback 一套日志组件的实现(Slf4j阵营)。
+
+Java日志领域被划分为两大阵营：Commons Logging阵营和Slf4j阵营。比较常用的组合使用方式是Slf4j与Logback组合使用，Commons Logging与Log4j组合使用。
+
+## Logback组合使用
+
+Logback是由log4j创始人设计的又一个开源日志组件。logback当前分成三个模块：logback-core,logback- classic和logback-access。logback-core是其它两个模块的基础模块。logback-classic是log4j的一个 改良版本。此外logback-classic完整实现SLF4J API使你可以很方便地更换成其它日志系统如log4j或JDK14 Logging。logback-access访问模块与Servlet容器集成提供通过Http来访问日志的功能。
+
+Logback 分为三个模块：logback-core，logback-classic，logback-access。其中logback-core 是核心；logback-classic 改善了 log4j，且自身实现了 SLF4J API，所以即使用 Logback 你仍然可以使用其他的日志实现，如原始的 Log4J，java.util.logging 等；logback-access 让你方便的访问日志信息，如通过 http 的方式。
+
+maven pom.xml
+```
+<dependency> 
+    <groupId>org.slf4j</groupId> 
+    <artifactId>slf4j-api</artifactId> 
+    <version>1.7.12</version> 
+</dependency> 
+<dependency> 
+    <groupId>org.slf4j</groupId> 
+    <artifactId>jcl-over-slf4j</artifactId> 
+    <version>1.7.12</version> 
+</dependency> 
+<dependency> 
+    <groupId>ch.qos.logback</groupId> 
+    <artifactId>logback-core</artifactId> 
+    <version>1.1.3</version> 
+</dependency> 
+<!-- 实现slf4j接口并整合 可以不要前面slf4j和logback-core引用-->
+<dependency> 
+    <groupId>ch.qos.logback</groupId> 
+    <artifactId>logback-classic</artifactId> 
+    <version>1.1.3</version> 
+</dependency>
+```
+
+logback.xml
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender" >
+        <!-- 输出的格式 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}:  %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- 相当于loger元素，只是name值已经确定为root了 -->
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
+```
+
+使用示例代码
+```
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+class Bar {
+
+	private final static Logger logger = LoggerFactory.getLogger(Bar.class);
+
+	public void doIt() {
+		logger.debug("logback 成功了");
+		logger.info("logback 成功了");
+    	logger.error("logback 成功了");
+    	// 输出字符串
+		logger.debug("this is a debug msg");
+		// 占位符
+		logger.debug("hi，welcome {}，today is {}","admin","Sunday");
+	}
+}
+```
+
+## Log4j2使用
+
+log4j2有默认的配置，如果要替换配置，只需要在classpath根目录下放置log4j2.xml。
+log4j 2.0与以往的1.x有一个明显的不同，其配置文件只能采用.xml, .json或者 .jsn。在默认情况下，系统选择configuration文件的优先级如下：log4j-test.json 或者log4j-test.jsn文件>>log4j2-test.xml>>log4j.json 或者log4j.jsn文件>>log4j2.xml。
+如果本地要测试，可以把log4j2-test.xml放到classpath，而正式环境使用log4j2.xml，则在打包部署的时候不要打包log4j2-test.xml即可。
+
+maven pom.xml
+```
+<!--  log4j2引入两个包  -->
+<dependency>
+ 	<groupId>org.apache.logging.log4j</groupId>
+ 	<artifactId>log4j-core</artifactId>
+ 	<version>2.5</version>
+</dependency>
+<dependency>
+ 	<groupId>org.apache.logging.log4j</groupId>
+ 	<artifactId>log4j-api</artifactId>
+ 	<version>2.5</version>
+</dependency>
+```
+
+log4j2.xml
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="off">
+	<appenders>
+		<!--这个输出控制台的配置-->
+		<Console name="Console" target="SYSTEM_OUT">
+			<!-- <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout pattern="%d{dd MMM yyyy HH\:mm\:ss.SSS} [%p] [%t] [%c] %m%n" /> -->
+			<!--  %p 输出优先级； %t 输出产生该日志事件的线程名；%c 输出所属的类目，通常就是所在类的全名；%m 输出代码中指定的消息；%n 输出一个回车换行符，Windows平台为“/r/n”，Unix平台为“/n”。 -->
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+	</appenders>
+	
+	<loggers>
+		<root level="debug">
+			<appender-ref ref="Console" />
+		</root>
+	</loggers>
+</configuration> 
+```
+
+使用示例代码
+```
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+private static Logger logger = LogManager.getLogger(Test.class.getName());
+
+```
+
+## 打印SQL执行语句
+
+mybatis-config.xml
+```
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties>
+		<!--  方言mysql  -->
+  		<property name="dialect" value="mysql"/>
+  	</properties>
+    <settings>
+		<!-- mybatis控制台LOG输出 logback实现 -->
+        <setting name="logImpl" value="SLF4J" />
+        <!-- mybatis控制台LOG输出 log4j2实现 -->
+        <setting name="logImpl" value="LOG4J2" />
+        <!-- logback打印SQL语句 -->
+        <setting name="logPrefix" value="dao."/>
+    </settings>
+</configuration>
+```
+
+## springboot中使用log4j2与logback
+
+spring boot支持日志框架：Java Util Logging, Log4J2 and Logback，默认是使用logback。
+spring boot默认会加载classpath:logback-spring.xml或者classpath:logback-spring.groovy
+
+logback配置方式:
+
+* 默认配置文件配置(不建议使用：不够灵活，对log4j2等不够友好)
+```
+# 日志文件名，比如：roncoo.log，或者是 /var/log/roncoo.log
+logging.file=roncoo.log
+# 日志级别配置，比如： logging.level.org.springframework=DEBUG
+logging.level.*=info
+logging.level.org.springframework=DEBUG
+```
+
+* 使用外部配置文件
+spring boot默认会加载classpath:logback-spring.xml或者classpath:logback-spring.groovy
+也可以在默认配置文件中指定logback配置文件路径
+```
+logging.config=classpath:logback-roncoo.xml
+```
+注意：不要使用logback这个来命名，否则spring boot将不能完全实例化
+
+log4j2配置方式:
+
+首先去除logback的依赖包,添加log4j2的依赖包。
+
+在classpath添加log4j2.xml或者log4j2-spring.xml(spring boot 默认加载)，也可以自定义配置文件名和路径。
+
+---
+
+## 后记
+
+如果你恰好逛到了这里，希望这篇文章对你有帮助。
+
+—— Panying 后记于 2015.10
